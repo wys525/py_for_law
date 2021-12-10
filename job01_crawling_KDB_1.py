@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.common.exceptions import *
 
 options = webdriver.ChromeOptions()
-options.add_argument('headless')
+# options.add_argument('headless')
 options.add_argument('window-size=1920x1080')
 options.add_argument(
     'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36')
@@ -36,18 +36,25 @@ url = 'https://law.go.kr/precSc.do?menuId=7&subMenuId=47&tabMenuId=213&query'
 driver.get(url)
 time.sleep(1)
 driver.find_element_by_xpath('//*[@id="viewHeightDiv"]/table/tbody/tr[1]/td[2]/a').click()  # 판례 1 누르기
+time.sleep(1)
 
 a = 381  # 시작 페이지
 b = 500  # 끝 페이지
 
 for i in range(a // 5):
-    driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/ol/li[5]/a').click()  # 페이지 숫자 버튼
-    time.sleep(1)
-    if i != 0:
-        driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[3]').click()  # 다음 페이지 버튼
-    elif i == 0:
-        driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[1]').click()  # 다음 페이지 버튼
-    time.sleep(1)
+    try:
+        if i != 0:
+            driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[3]').click()  # 다음 페이지 버튼
+        elif i == 0:
+            driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[1]').click()  # 다음 페이지 버튼
+        time.sleep(1)
+    except:
+        time.sleep(1)
+        if i != 0:
+            driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[3]').click()  # 다음 페이지 버튼
+        elif i == 0:
+            driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[1]').click()  # 다음 페이지 버튼
+        time.sleep(1)
 
 
 def crawling_data():
