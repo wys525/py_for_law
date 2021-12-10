@@ -25,26 +25,35 @@ driver = webdriver.Chrome('./chromedriver.exe', options=options)
 # //*[@id="WideListDIV"]/div/div[6]/ol/li[2]
 # //*[@id="WideListDIV"]/div/div[6]/ol/li[5]
 # //*[@id="WideListDIV"]/div/div[6]/a[3]/img   //*[@id="listDiv"]/div[2]/a[1]                         다음 페이지
-# //*[@id="licPrec218191"]/a/span[1] 왼쪽리스트 판례 제목
-# //*[@id="licPrec218187"]/a/span[1]
-# //*[@id="licPrec218195"]/a/span[1]
 # /html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[1]
 # /html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[2]
 # /html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[50]
 # /html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[1]/a/span[1]
-# /html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[2]/a/span[1]
+# /html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[2]/a/span[1] 왼쪽리스트 판례 제목
 
 
 url = 'https://law.go.kr/precSc.do?menuId=7&subMenuId=47&tabMenuId=213&query'
 driver.get(url)
 time.sleep(1)
 driver.find_element_by_xpath('//*[@id="viewHeightDiv"]/table/tbody/tr[1]/td[2]/a').click()  # 판례 1 누르기
-# time.sleep(5)
+
+a = 381  # 시작 페이지
+b = 500  # 끝 페이지
+
+for i in range(a // 5):
+    driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/ol/li[5]/a').click()  # 페이지 숫자 버튼
+    time.sleep(1)
+    if i != 0:
+        driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[3]').click()  # 다음 페이지 버튼
+    elif i == 0:
+        driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[1]').click()  # 다음 페이지 버튼
+    time.sleep(1)
 
 
 def crawling_data():
     law = driver.find_element_by_xpath('//*[@id="bodyContent"]').text
-    title = driver.find_element_by_xpath('/html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[{}]/a/span[1]'.format(j)).text
+    title = driver.find_element_by_xpath(
+        '/html/body/div[4]/div[1]/div[1]/div/div[1]/ul/li[{}]/a/span[1]'.format(j)).text
     date = driver.find_element_by_xpath('//*[@id="contentBody"]/div[1]').text
     date = date.split(",")
     try:
@@ -58,11 +67,11 @@ def crawling_data():
     titles.append(title)
 
 
-for i in range(1, 26):  # 총 페이지수 1654
+for i in range(a, 1 + b):  # 총 페이지수 1653
     titles = []
     laws = []
     dates = []
-    if i % 5 == 0:  # 페이지 수 한 화면에 1~5 페이지 / 5페이지째가되면
+    if i % 5 == 0:  # 페이지 수 한 화면에 1~5 페이지 / 5 페이지째가 되면
         driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/ol/li[5]/a'.format(i)).click()  # 페이지 숫자 버튼
         time.sleep(1)
         for j in range(1, 51):
@@ -103,12 +112,6 @@ for i in range(1, 26):  # 총 페이지수 1654
         if i % 5 != 1:
             driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/ol/li[{}]/a'.format(i % 5)).click()  # 페이지 숫자 버튼
             time.sleep(1)
-        # if (i // 5 > 0) and (i % 5 == 1):
-        #     for _ in range(i // 5):
-        #         driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/ol/li[5]/a').click()  # 페이지 숫자 버튼
-        #         time.sleep(1)
-        #         driver.find_element_by_xpath('//*[@id="listDiv"]/div[2]/a[1]').click()  # 다음 페이지 버튼
-        #         time.sleep(1)
         for j in range(1, 51):
             print('{}-{}'.format(i, j), end=" / ")
             if j % 10 == 0:
